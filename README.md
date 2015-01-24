@@ -20,7 +20,7 @@ composer create-project jaceju/clitool-boilerplate myapp -s dev
      const VERSION = '0.0.1';
 ```
 
-`./build.php`
+`build.php`
 
 ```diff
 -        $pharName = 'app.phar';
