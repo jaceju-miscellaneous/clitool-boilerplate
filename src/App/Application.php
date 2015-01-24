@@ -19,5 +19,6 @@ class Application extends CliApp
     {
         parent::init();
         $this->command('list');
+        $this->command('self-build');
     }
 }

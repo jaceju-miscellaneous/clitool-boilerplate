@@ -27,16 +27,10 @@ composer create-project jaceju/clitool-boilerplate myapp -s dev
 +        $pharName = '<myapp>.phar';
 ```
 
-## Build phar file
+## Build executable phar
 
 ```bash
-php build.php
-```
-
-and test:
-
-```
-php bin/app.phar
+php src/bootstrap.php self-build
 ```
 
 ## License
