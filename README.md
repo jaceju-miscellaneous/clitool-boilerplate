@@ -16,7 +16,7 @@ composer create-project jaceju/clitool-boilerplate myapp -s dev
 
 ```diff
 -    const NAME = 'App';
-+    const NAME = '<YourAppName>';
++    const NAME = '<MyApp>';
      const VERSION = '0.0.1';
 ```
 
@@ -24,7 +24,7 @@ composer create-project jaceju/clitool-boilerplate myapp -s dev
 
 ```diff
 -        $pharName = 'app.phar';
-+        $pharName = '<your-app-name>.phar';
++        $pharName = '<myapp>.phar';
 ```
 
 ## Build phar file
