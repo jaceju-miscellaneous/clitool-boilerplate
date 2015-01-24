@@ -31,6 +31,8 @@ composer create-project jaceju/clitool-boilerplate myapp -s dev
 
 ```bash
 php src/bootstrap.php self-build
+chmod +x bin/app.phar
+mv bin/app.phar /usr/local/bin/app
 ```
 
 ## License
