@@ -13,9 +13,6 @@
     "require": {
         "corneltek/cliframework": ">=2.2.0"
     },
-    "require-dev": {
-        "phpunit/phpunit": "4.4.x-dev"
-    },
     "autoload": {
         "classmap": [
             "src/",
