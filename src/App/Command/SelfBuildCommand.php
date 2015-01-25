@@ -11,6 +11,8 @@ class SelfBuildCommand extends Command
 
     protected $composerInfo = null;
 
+    protected $oldSemver = '0.0.0';
+
     public function setAndCheckEnv()
     {
         $this->baseDir = getcwd();
@@ -21,6 +23,19 @@ class SelfBuildCommand extends Command
             throw new CommandException($message);
         }
         $this->composerInfo = json_decode(file_get_contents($composerFile));
+    }
+
+    protected function ensureOldSemver()
+    {
+        $oldVersion = $this->composerInfo->version;
+
+        list($major, $minor, $patch) = explode('.', $oldVersion);
+
+        $this->oldSemver = [
+            'major' => $major,
+            'minor' => $minor,
+            'patch' => $patch,
+        ];
     }
 
     protected function buildPhar($name)
@@ -53,6 +68,7 @@ class SelfBuildCommand extends Command
     public function execute($name = 'app', $version = null)
     {
         $this->setAndCheckEnv();
+        $this->ensureOldSemver();
         $this->buildPhar($name);
     }
 }
