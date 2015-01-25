@@ -72,6 +72,8 @@ class SelfBuildCommand extends Command
 
         $phar->buildFromIterator($compoIterator, $this->baseDir);
         $phar->setStub($phar->createDefaultStub('src/bootstrap.php'));
+
+        rename($buildFile, $buildDir . '/' . $name);
     }
 
     protected function checkSemver($version)
