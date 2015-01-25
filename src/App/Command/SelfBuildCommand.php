@@ -6,7 +6,7 @@ use CLIFramework\Command;
 
 class SelfBuildCommand extends Command
 {
-    public function execute($name = 'app')
+    protected function buildPhar($name)
     {
         $pharName = $name . '.phar';
 
@@ -33,5 +33,10 @@ class SelfBuildCommand extends Command
 
         $phar->buildFromIterator($compoIterator, $baseDir);
         $phar->setStub($phar->createDefaultStub('src/bootstrap.php'));
+    }
+
+    public function execute($name = 'app', $version = null)
+    {
+        $this->buildPhar($name);
     }
 }
