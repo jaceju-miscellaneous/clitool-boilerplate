@@ -1,7 +1,7 @@
 {
     "name": "jaceju/clitool-boilerplate",
     "version": "0.0.1",
-    "description": "",
+    "description": "Simple boilerplate for build your command line tool.",
     "minimum-stability": "dev",
     "license": "MIT",
     "authors": [
