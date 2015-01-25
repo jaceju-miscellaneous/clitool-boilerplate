@@ -9,6 +9,8 @@ class SelfBuildCommand extends Command
 {
     protected $baseDir = null;
 
+    protected $composerFile = null;
+
     protected $composerInfo = null;
 
     protected $oldSemver = '0.0.0';
@@ -16,13 +18,13 @@ class SelfBuildCommand extends Command
     protected function checkComposer()
     {
         $this->baseDir = getcwd();
-        $composerFile = $this->baseDir . '/composer.json';
+        $this->composerFile = $this->baseDir . '/composer.json';
 
-        if (!file_exists($composerFile)) {
+        if (!file_exists($this->composerFile)) {
             $message = 'Here has not a project based on composer.';
             throw new CommandException($message);
         }
-        $this->composerInfo = json_decode(file_get_contents($composerFile));
+        $this->composerInfo = json_decode(file_get_contents($this->composerFile));
     }
 
     protected function ensureOldSemver()
