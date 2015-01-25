@@ -15,6 +15,11 @@ class SelfBuildCommand extends Command
 
     protected $oldSemver = '0.0.0';
 
+    public function brief()
+    {
+        return 'Build executable phar into `bin` folder';
+    }
+
     protected function checkComposer()
     {
         $this->baseDir = getcwd();
