@@ -3,14 +3,24 @@
 namespace App\Command;
 
 use CLIFramework\Command;
+use CLIFramework\CommandException;
 
 class SelfBuildCommand extends Command
 {
     protected $baseDir = null;
 
+    protected $composerInfo = null;
+
     public function setAndCheckEnv()
     {
         $this->baseDir = getcwd();
+        $composerFile = $this->baseDir . '/composer.json';
+
+        if (!file_exists($composerFile)) {
+            $message = 'Here has not a project based on composer.';
+            throw new CommandException($message);
+        }
+        $this->composerInfo = json_decode(file_get_contents($composerFile));
     }
 
     protected function buildPhar($name)
