@@ -13,13 +13,13 @@ class ExampleCommand extends Command
 
     public function init()
     {
+        parent::init();
         // register your subcommand here ..
     }
 
     public function options($opts)
     {
         // command options
-
     }
 
     public function execute()
