@@ -26,8 +26,8 @@ Then change the info in `composer.json`.
 
 ```bash
 php src/bootstrap.php self-build
-chmod +x bin/app.phar
-mv bin/app.phar /usr/local/bin/app
+chmod +x bin/app
+mv bin/app /usr/local/bin/
 ```
 
 ## License
