@@ -1,4 +1,6 @@
-# Boilerplate for build your command line tool
+# CLITool Boilerplate
+
+Simple boilerplate for build your command line tool.
 
 Powered by [c9s/CLIFramework](https://github.com/c9s/CLIFramework)
 
