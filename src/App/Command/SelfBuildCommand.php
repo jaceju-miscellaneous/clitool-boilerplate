@@ -96,11 +96,7 @@ class SelfBuildCommand extends Command
     protected function replaceComposerJsonVersion($newVersion)
     {
         $this->composerInfo->version = $newVersion;
-        $jsonOptions = JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT;
-        $content = json_encode($this->composerInfo, $jsonOptions);
-        file_put_contents($this->composerFile, $content);
     }
-
 
     protected function replaceApplicationVersion($newVersion)
     {
@@ -125,11 +121,25 @@ class SelfBuildCommand extends Command
         $this->replaceApplicationVersion($newVersion);
     }
 
+    protected function updateAppBin($name)
+    {
+        $this->composerInfo->bin = ['bin/' . $name];
+    }
+
+    protected function saveComposerJson()
+    {
+        $jsonOptions = JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT;
+        $content = json_encode($this->composerInfo, $jsonOptions);
+        file_put_contents($this->composerFile, $content);
+    }
+
     public function execute($name = 'app', $version = null)
     {
         $this->checkComposer();
         $this->ensureOldSemver();
         $this->buildPhar($name);
         $this->updateVersion($version);
+        $this->updateAppBin($name);
+        $this->saveComposerJson();
     }
 }
