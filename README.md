@@ -1,6 +1,4 @@
-# Boilerplate for build a command line tool.
-
-**Working in progress.**
+# Boilerplate for build your command line tool
 
 Powered by [c9s/CLIFramework](https://github.com/c9s/CLIFramework)
 
@@ -10,15 +8,17 @@ Powered by [c9s/CLIFramework](https://github.com/c9s/CLIFramework)
 composer create-project jaceju/clitool-boilerplate myapp -s dev
 ```
 
-## Change application name
+## Change application information
 
-`src/App/Application.php`
+Rename the application in `src/App/Application.php`:
 
 ```diff
 -    const NAME = 'App';
 +    const NAME = '<MyApp>';
      const VERSION = '0.0.1';
 ```
+
+Then change the info in `composer.json`.
 
 ## Build executable phar
 
