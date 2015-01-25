@@ -18,7 +18,7 @@ class Application extends CliApp
     public function init()
     {
         parent::init();
-        $this->command('list');
+        $this->command('example');
         $this->command('self-build');
     }
 }

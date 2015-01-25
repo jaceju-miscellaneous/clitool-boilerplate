@@ -4,8 +4,12 @@ namespace App\Command;
 
 use CLIFramework\Command;
 
-class ListCommand extends Command
+class ExampleCommand extends Command
 {
+    public function brief()
+    {
+        return 'Show something for example';
+    }
 
     public function init()
     {
@@ -21,6 +25,6 @@ class ListCommand extends Command
     public function execute()
     {
         $logger = $this->logger;
-        $logger->info('List something');
+        $logger->info('This is a example command.');
     }
 }
