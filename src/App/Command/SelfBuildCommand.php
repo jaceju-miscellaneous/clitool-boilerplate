@@ -13,7 +13,7 @@ class SelfBuildCommand extends Command
 
     protected $oldSemver = '0.0.0';
 
-    public function setAndCheckEnv()
+    protected function checkComposer()
     {
         $this->baseDir = getcwd();
         $composerFile = $this->baseDir . '/composer.json';
@@ -67,7 +67,7 @@ class SelfBuildCommand extends Command
 
     public function execute($name = 'app', $version = null)
     {
-        $this->setAndCheckEnv();
+        $this->checkComposer();
         $this->ensureOldSemver();
         $this->buildPhar($name);
     }
