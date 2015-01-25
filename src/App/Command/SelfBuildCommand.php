@@ -6,14 +6,19 @@ use CLIFramework\Command;
 
 class SelfBuildCommand extends Command
 {
+    protected $baseDir = null;
+
+    public function setAndCheckEnv()
+    {
+        $this->baseDir = getcwd();
+    }
+
     protected function buildPhar($name)
     {
         $pharName = $name . '.phar';
 
-        $baseDir = getcwd();
-
         $compileDirs = ['src', 'vendor'];
-        $buildDir = $baseDir . '/bin';
+        $buildDir = $this->baseDir . '/bin';
         $buildFile = $buildDir . '/' . $pharName;
 
         if (file_exists($buildFile)) {
@@ -31,12 +36,13 @@ class SelfBuildCommand extends Command
             $compoIterator->append(new \RecursiveIteratorIterator($it));
         }
 
-        $phar->buildFromIterator($compoIterator, $baseDir);
+        $phar->buildFromIterator($compoIterator, $this->baseDir);
         $phar->setStub($phar->createDefaultStub('src/bootstrap.php'));
     }
 
     public function execute($name = 'app', $version = null)
     {
+        $this->setAndCheckEnv();
         $this->buildPhar($name);
     }
 }
