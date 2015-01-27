@@ -30,6 +30,18 @@ chmod +x bin/app
 mv bin/app /usr/local/bin/
 ```
 
+## Zsh auto-completion
+
+```bash
+myapp zsh --bind myapp > ~/.zsh/myapp
+```
+
+Then add these lines to your `.zshrc` file:
+
+```
+source ~/.zsh/myapp 
+```
+
 ## License
 
 MIT
