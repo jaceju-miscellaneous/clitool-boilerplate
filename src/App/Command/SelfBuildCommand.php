@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Application;
 use CLIFramework\Command;
 use CLIFramework\CommandException;
 
@@ -47,8 +48,10 @@ class SelfBuildCommand extends Command
         ];
     }
 
-    protected function buildPhar($name)
+    protected function buildPhar()
     {
+        $name = strtolower(Application::NAME);
+
         $pharName = $name . '.phar';
 
         $compileDirs = ['src', 'vendor'];
@@ -121,8 +124,9 @@ class SelfBuildCommand extends Command
         $this->replaceApplicationVersion($newVersion);
     }
 
-    protected function updateAppBin($name)
+    protected function updateAppBin()
     {
+        $name = strtolower(Application::NAME);
         $this->composerInfo->bin = ['bin/' . $name];
     }
 
@@ -133,13 +137,13 @@ class SelfBuildCommand extends Command
         file_put_contents($this->composerFile, $content);
     }
 
-    public function execute($name = 'app', $version = null)
+    public function execute($version = null)
     {
         $this->checkComposer();
         $this->ensureOldSemver();
-        $this->buildPhar($name);
+        $this->buildPhar();
         $this->updateVersion($version);
-        $this->updateAppBin($name);
+        $this->updateAppBin();
         $this->saveComposerJson();
     }
 }
