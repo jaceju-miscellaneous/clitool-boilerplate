@@ -2,7 +2,9 @@
 
 Simple boilerplate for build your command line tool.
 
-Powered by [c9s/CLIFramework](https://github.com/c9s/CLIFramework)
+## Requirement
+
+* PHP 5.4+
 
 ## Installation
 
@@ -16,7 +18,7 @@ Rename the application in `src/App/Application.php`:
 
 ```diff
 -    const NAME = 'App';
-+    const NAME = '<MyApp>';
++    const NAME = 'MyApp';
      const VERSION = '0.0.1';
 ```
 
@@ -26,8 +28,8 @@ Then change the info in `composer.json`.
 
 ```bash
 php src/bootstrap.php self-build
-chmod +x bin/app
-mv bin/app /usr/local/bin/
+chmod +x bin/myapp
+mv bin/myapp /usr/local/bin/
 ```
 
 ## Zsh auto-completion
@@ -41,6 +43,11 @@ Then add these lines to your `.zshrc` file:
 ```
 source ~/.zsh/myapp 
 ```
+
+## Powered by
+
+* [c9s/CLIFramework](https://github.com/c9s/CLIFramework)
+* [box-project/box2](https://github.com/box-project/box2)
 
 ## License
 

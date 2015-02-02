@@ -51,10 +51,7 @@ class SelfBuildCommand extends Command
     protected function buildPhar()
     {
         $name = strtolower(Application::NAME);
-
         $pharName = $name . '.phar';
-
-        $compileDirs = ['src', 'vendor'];
         $buildDir = $this->baseDir . '/bin';
         $buildFile = $buildDir . '/' . $pharName;
 
@@ -62,20 +59,7 @@ class SelfBuildCommand extends Command
             @unlink($buildFile);
         }
 
-        $phar = new \Phar(
-            $buildFile,
-            \FilesystemIterator::CURRENT_AS_FILEINFO | \FilesystemIterator::KEY_AS_FILENAME, $pharName
-        );
-
-        $compoIterator = new \AppendIterator();
-        foreach ($compileDirs as $dir) {
-            $it = new \RecursiveDirectoryIterator($dir);
-            $compoIterator->append(new \RecursiveIteratorIterator($it));
-        }
-
-        $phar->buildFromIterator($compoIterator, $this->baseDir);
-        $phar->setStub($phar->createDefaultStub('src/bootstrap.php'));
-
+        exec('./box.phar build');
         rename($buildFile, $buildDir . '/' . $name);
     }
 
@@ -141,9 +125,9 @@ class SelfBuildCommand extends Command
     {
         $this->checkComposer();
         $this->ensureOldSemver();
-        $this->buildPhar();
         $this->updateVersion($version);
         $this->updateAppBin();
         $this->saveComposerJson();
+        $this->buildPhar();
     }
 }
