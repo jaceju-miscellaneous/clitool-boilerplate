@@ -7,7 +7,7 @@ use CLIFramework\Application as CliApp;
 class Application extends CliApp
 {
     const NAME = 'App';
-    const VERSION = '0.0.1';
+    const VERSION = '@package_version@';
 
     public function options($opts)
     {
@@ -19,6 +19,7 @@ class Application extends CliApp
     {
         parent::init();
         $this->command('example');
+        $this->command('self-update');
         $this->command('self-build');
     }
 }
