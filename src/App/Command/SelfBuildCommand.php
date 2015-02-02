@@ -10,11 +10,17 @@ class SelfBuildCommand extends Command
 {
     const SEMVER_PATTERN = 'v?(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?';
 
+    protected $appName = 'App';
+
     protected $baseDir = null;
 
     protected $composerFile = null;
 
     protected $composerInfo = null;
+
+    protected $boxFile = null;
+
+    protected $boxInfo = null;
 
     protected $oldSemver = '0.0.0';
 
@@ -23,9 +29,15 @@ class SelfBuildCommand extends Command
         return 'Build executable phar into `bin` folder';
     }
 
+    public function init()
+    {
+        parent::init();
+        $this->appName = strtolower(Application::NAME);
+        $this->baseDir = getcwd();
+    }
+
     protected function checkComposer()
     {
-        $this->baseDir = getcwd();
         $this->composerFile = $this->baseDir . '/composer.json';
 
         if (!file_exists($this->composerFile)) {
@@ -33,6 +45,17 @@ class SelfBuildCommand extends Command
             throw new CommandException($message);
         }
         $this->composerInfo = json_decode(file_get_contents($this->composerFile));
+    }
+
+    protected function checkBox()
+    {
+        $this->boxFile = $this->baseDir . '/box.json';
+
+        if (!file_exists($this->boxFile)) {
+            $message = 'Here has not a project based on box.';
+            throw new CommandException($message);
+        }
+        $this->boxInfo = json_decode(file_get_contents($this->boxFile));
     }
 
     protected function ensureOldSemver()
@@ -46,21 +69,6 @@ class SelfBuildCommand extends Command
             'minor' => $minor,
             'patch' => $patch,
         ];
-    }
-
-    protected function buildPhar()
-    {
-        $name = strtolower(Application::NAME);
-        $pharName = $name . '.phar';
-        $buildDir = $this->baseDir . '/bin';
-        $buildFile = $buildDir . '/' . $pharName;
-
-        if (file_exists($buildFile)) {
-            @unlink($buildFile);
-        }
-
-        exec('./box.phar build');
-        rename($buildFile, $buildDir . '/' . $name);
     }
 
     protected function checkSemver($version)
@@ -110,8 +118,8 @@ class SelfBuildCommand extends Command
 
     protected function updateAppBin()
     {
-        $name = strtolower(Application::NAME);
-        $this->composerInfo->bin = ['bin/' . $name];
+        $this->composerInfo->bin = ['bin/' . $this->appName];
+        $this->boxInfo->output = 'bin/' . $this->appName . '.phar';
     }
 
     protected function saveComposerJson()
@@ -121,13 +129,36 @@ class SelfBuildCommand extends Command
         file_put_contents($this->composerFile, $content);
     }
 
+    protected function saveBoxJson()
+    {
+        $jsonOptions = JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT;
+        $content = json_encode($this->boxInfo, $jsonOptions);
+        file_put_contents($this->boxFile, $content);
+    }
+
+    protected function buildPhar()
+    {
+        $pharName = $this->appName . '.phar';
+        $buildDir = $this->baseDir . '/bin';
+        $buildFile = $buildDir . '/' . $pharName;
+
+        if (file_exists($buildFile)) {
+            @unlink($buildFile);
+        }
+
+        exec('./box.phar build');
+        rename($buildFile, $buildDir . '/' . $this->appName);
+    }
+
     public function execute($version = null)
     {
         $this->checkComposer();
+        $this->checkBox();
         $this->ensureOldSemver();
         $this->updateVersion($version);
         $this->updateAppBin();
         $this->saveComposerJson();
+        $this->saveBoxJson();
         $this->buildPhar();
     }
 }
