@@ -19,6 +19,8 @@ class Build
 
     protected $oldSemver = '0.0.0';
 
+    protected $newVersion = '0.0.0';
+
     public function __construct()
     {
         $this->appName = strtolower(Application::NAME);
@@ -29,9 +31,14 @@ class Build
 
     protected function ensureOldSemver()
     {
-        $oldVersion = $this->composerInfo->version;
+        $version = trim(exec('git tag -l'));
+        if ($version !== '' && !$this->checkSemver($version)) {
+            throw new \Exception('Latest version does not match semantic version.');
+        } else {
+            $version = '0.0.0';
+        }
 
-        list($major, $minor, $patch) = explode('.', $oldVersion);
+        list($major, $minor, $patch) = explode('.', $version);
 
         $this->oldSemver = [
             'major' => $major,
@@ -57,12 +64,7 @@ class Build
         return $newVersion;
     }
 
-    protected function replaceComposerJsonVersion($newVersion)
-    {
-        $this->composerInfo->version = $newVersion;
-    }
-
-    protected function replaceApplicationVersion($newVersion)
+    protected function tagVersion($newVersion)
     {
         exec('git tag ' . $newVersion);
     }
@@ -73,9 +75,8 @@ class Build
             throw new \Exception('Version must match semantic version');
         }
 
-        $newVersion = $this->getNewVersionFrom($version);
-        $this->replaceComposerJsonVersion($newVersion);
-        $this->replaceApplicationVersion($newVersion);
+        $this->newVersion = $this->getNewVersionFrom($version);
+        $this->tagVersion($this->newVersion);
     }
 
     protected function updateAppBin()
