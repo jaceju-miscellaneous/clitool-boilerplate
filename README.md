@@ -27,7 +27,7 @@ Then change the info in `composer.json`.
 ## Build executable phar
 
 ```bash
-php src/bootstrap.php self-build
+php build.php [version]
 chmod +x bin/myapp
 mv bin/myapp /usr/local/bin/
 ```
