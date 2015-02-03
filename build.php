@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Command;
+require __DIR__ . '/vendor/autoload.php';
 
 use App\Application;
-use CLIFramework\Command;
-use CLIFramework\CommandException;
 
-class SelfBuildCommand extends Command
+class Build
 {
     const SEMVER_PATTERN = 'v?(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?';
 
@@ -24,14 +22,8 @@ class SelfBuildCommand extends Command
 
     protected $oldSemver = '0.0.0';
 
-    public function brief()
+    public function __construct()
     {
-        return 'Build executable phar into `bin` folder';
-    }
-
-    public function init()
-    {
-        parent::init();
         $this->appName = strtolower(Application::NAME);
         $this->baseDir = getcwd();
     }
@@ -42,7 +34,7 @@ class SelfBuildCommand extends Command
 
         if (!file_exists($this->composerFile)) {
             $message = 'Here has not a project based on composer.';
-            throw new CommandException($message);
+            throw new Exception($message);
         }
         $this->composerInfo = json_decode(file_get_contents($this->composerFile));
     }
@@ -53,7 +45,7 @@ class SelfBuildCommand extends Command
 
         if (!file_exists($this->boxFile)) {
             $message = 'Here has not a project based on box.';
-            throw new CommandException($message);
+            throw new \Exception($message);
         }
         $this->boxInfo = json_decode(file_get_contents($this->boxFile));
     }
@@ -95,20 +87,13 @@ class SelfBuildCommand extends Command
 
     protected function replaceApplicationVersion($newVersion)
     {
-        $pattern = '/^\s+const VERSION = \'(' . self::SEMVER_PATTERN . ')\'\s*;$/m';
-        $appFile = $this->baseDir . '/src/App/Application.php';
-
-        $content = file_get_contents($appFile);
-        $replace = '    const VERSION = \'' . $newVersion . '\';';
-
-        $content = preg_replace($pattern, $replace, $content);
-        file_put_contents($appFile, $content);
+        exec('git tag ' . $newVersion);
     }
 
     protected function updateVersion($version)
     {
         if (null !== $version && !$this->checkSemver($version)) {
-            throw new CommandException('Version must match semantic version');
+            throw new \Exception('Version must match semantic version');
         }
 
         $newVersion = $this->getNewVersionFrom($version);
@@ -162,3 +147,7 @@ class SelfBuildCommand extends Command
         $this->buildPhar();
     }
 }
+
+$version = isset($argv[1]) ? $argv[1] : null;
+$command = new Build();
+$command->execute($version);

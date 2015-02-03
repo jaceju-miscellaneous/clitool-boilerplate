@@ -19,7 +19,7 @@ Rename the application in `src/App/Application.php`:
 ```diff
 -    const NAME = 'App';
 +    const NAME = 'MyApp';
-     const VERSION = '0.0.1';
+     const VERSION = '@package_version@';
 ```
 
 Then change the info in `composer.json`.

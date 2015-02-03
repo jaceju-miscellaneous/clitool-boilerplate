@@ -20,6 +20,5 @@ class Application extends CliApp
         parent::init();
         $this->command('example');
         $this->command('self-update');
-        $this->command('self-build');
     }
 }
