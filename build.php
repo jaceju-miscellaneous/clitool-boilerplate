@@ -19,6 +19,8 @@ class Build
 
     protected $box = null;
 
+    protected $manifest = null;
+
     protected $oldSemver = '0.0.0';
 
     protected $newVersion = '0.0.0';
@@ -27,15 +29,20 @@ class Build
     {
         $this->appName = strtolower(Application::NAME);
         $this->baseDir = getcwd();
+        $this->composer = new JsonFile($this->baseDir . '/composer.json');
         $this->box = new JsonFile($this->baseDir . '/box.json');
+        $this->manifest = new JsonFile($this->baseDir . '/build/manifest.json', true);
     }
 
     protected function ensureOldSemver()
     {
         $version = trim(exec('git tag -l'));
+
         if ($version !== '' && !$this->checkSemver($version)) {
             throw new \Exception('Latest version does not match semantic version.');
-        } else {
+        }
+
+        if ('' === $version) {
             $version = '0.0.0';
         }
 
@@ -65,11 +72,6 @@ class Build
         return $newVersion;
     }
 
-    protected function tagVersion($newVersion)
-    {
-        exec('git tag ' . $newVersion);
-    }
-
     protected function updateVersion($version)
     {
         if (null !== $version && !$this->checkSemver($version)) {
@@ -77,39 +79,71 @@ class Build
         }
 
         $this->newVersion = $this->getNewVersionFrom($version);
-        $this->tagVersion($this->newVersion);
+        exec('git tag ' . $this->newVersion);
+    }
+
+    protected function updateRepository()
+    {
+        $this->composer->info->name = Application::REPOSITORY;
+        $this->composer->save();
     }
 
     protected function updateAppBin()
     {
         $this->box->info->output = self::BUILD_PATH . '/' . $this->appName . '.phar';
-    }
-
-    protected function saveMetafiles()
-    {
         $this->box->save();
     }
 
-    protected function buildPhar()
+    protected function getFullPharPath()
     {
         $pharName = $this->appName . '.phar';
         $buildDir = $this->baseDir . '/' . self::BUILD_PATH;
         $buildFile = $buildDir . '/' . $pharName;
+        return $buildFile;
+    }
+
+    protected function buildPhar()
+    {
+        $buildFile = $this->getFullPharPath();
 
         if (file_exists($buildFile)) {
             @unlink($buildFile);
         }
 
+        @mkdir(dirname($buildFile));
         exec('./box.phar build');
+    }
+
+    protected function updateManifest()
+    {
+        if (null === $this->manifest->info) {
+            $this->manifest->info = [];
+        }
+
+        $buildFile = $this->getFullPharPath();
+
+        list($vendor, $repository) = explode('/', Application::REPOSITORY);
+        $url = sprintf('http://%s.github.io/%s/downloads/%s', $vendor, $repository, basename($buildFile));
+
+        $manifest = [
+            'name' => basename($buildFile),
+            'sha1' => sha1_file($buildFile),
+            'url'  => $url,
+            'version' => $this->newVersion,
+        ];
+
+        $this->manifest->info[] = $manifest;
+        $this->manifest->save();
     }
 
     public function execute($version = null)
     {
         $this->ensureOldSemver();
         $this->updateVersion($version);
+        $this->updateRepository();
         $this->updateAppBin();
-        $this->saveMetafiles();
         $this->buildPhar();
+        $this->updateManifest();
     }
 }
 

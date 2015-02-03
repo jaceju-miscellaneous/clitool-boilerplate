@@ -19,10 +19,11 @@ Rename the application in `src/App/Application.php`:
 ```diff
 -    const NAME = 'App';
 +    const NAME = 'MyApp';
-     const VERSION = '@package_version@';
+-    const REPOSITORY = 'jaceju/clitool-boilerplate';
++    const REPOSITORY = 'vendor/repository';
 ```
 
-Then change the info in `composer.json`.
+Then change the info in `composer.json`. 
 
 ## Build executable phar
 
@@ -48,6 +49,7 @@ source ~/.zsh/myapp
 
 * [c9s/CLIFramework](https://github.com/c9s/CLIFramework)
 * [box-project/box2](https://github.com/box-project/box2)
+* [cpliakas/manifest-publisher](https://github.com/cpliakas/manifest-publisher)
 
 ## License
 

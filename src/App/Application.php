@@ -8,6 +8,7 @@ class Application extends CliApp
 {
     const NAME = 'App';
     const VERSION = '@package_version@';
+    const REPOSITORY = 'jaceju/clitool-boilerplate';
 
     public function options($opts)
     {
