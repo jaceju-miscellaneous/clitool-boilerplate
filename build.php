@@ -9,6 +9,8 @@ class Build
 {
     const SEMVER_PATTERN = 'v?(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?';
 
+    const BUILD_PATH = 'build/downloads';
+
     protected $appName = 'App';
 
     protected $baseDir = null;
@@ -25,7 +27,6 @@ class Build
     {
         $this->appName = strtolower(Application::NAME);
         $this->baseDir = getcwd();
-        $this->composer = new JsonFile($this->baseDir . '/composer.json');
         $this->box = new JsonFile($this->baseDir . '/box.json');
     }
 
@@ -81,20 +82,18 @@ class Build
 
     protected function updateAppBin()
     {
-        $this->composer->info->bin = ['bin/' . $this->appName];
-        $this->box->info->output = 'bin/' . $this->appName . '.phar';
+        $this->box->info->output = self::BUILD_PATH . '/' . $this->appName . '.phar';
     }
 
     protected function saveMetafiles()
     {
-        $this->composer->save();
         $this->box->save();
     }
 
     protected function buildPhar()
     {
         $pharName = $this->appName . '.phar';
-        $buildDir = $this->baseDir . '/bin';
+        $buildDir = $this->baseDir . '/' . self::BUILD_PATH;
         $buildFile = $buildDir . '/' . $pharName;
 
         if (file_exists($buildFile)) {
@@ -102,7 +101,6 @@ class Build
         }
 
         exec('./box.phar build');
-        rename($buildFile, $buildDir . '/' . $this->appName);
     }
 
     public function execute($version = null)
