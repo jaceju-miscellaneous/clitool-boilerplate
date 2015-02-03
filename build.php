@@ -3,6 +3,7 @@
 require __DIR__ . '/vendor/autoload.php';
 
 use App\Application;
+use App\JsonFile;
 
 class Build
 {
@@ -12,13 +13,9 @@ class Build
 
     protected $baseDir = null;
 
-    protected $composerFile = null;
+    protected $composer = null;
 
-    protected $composerInfo = null;
-
-    protected $boxFile = null;
-
-    protected $boxInfo = null;
+    protected $box = null;
 
     protected $oldSemver = '0.0.0';
 
@@ -26,28 +23,8 @@ class Build
     {
         $this->appName = strtolower(Application::NAME);
         $this->baseDir = getcwd();
-    }
-
-    protected function checkComposer()
-    {
-        $this->composerFile = $this->baseDir . '/composer.json';
-
-        if (!file_exists($this->composerFile)) {
-            $message = 'Here has not a project based on composer.';
-            throw new Exception($message);
-        }
-        $this->composerInfo = json_decode(file_get_contents($this->composerFile));
-    }
-
-    protected function checkBox()
-    {
-        $this->boxFile = $this->baseDir . '/box.json';
-
-        if (!file_exists($this->boxFile)) {
-            $message = 'Here has not a project based on box.';
-            throw new \Exception($message);
-        }
-        $this->boxInfo = json_decode(file_get_contents($this->boxFile));
+        $this->composer = new JsonFile($this->baseDir . '/composer.json');
+        $this->box = new JsonFile($this->baseDir . '/box.json');
     }
 
     protected function ensureOldSemver()
@@ -103,22 +80,14 @@ class Build
 
     protected function updateAppBin()
     {
-        $this->composerInfo->bin = ['bin/' . $this->appName];
-        $this->boxInfo->output = 'bin/' . $this->appName . '.phar';
+        $this->composer->info->bin = ['bin/' . $this->appName];
+        $this->box->info->output = 'bin/' . $this->appName . '.phar';
     }
 
-    protected function saveComposerJson()
+    protected function saveMetafiles()
     {
-        $jsonOptions = JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT;
-        $content = json_encode($this->composerInfo, $jsonOptions);
-        file_put_contents($this->composerFile, $content);
-    }
-
-    protected function saveBoxJson()
-    {
-        $jsonOptions = JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT;
-        $content = json_encode($this->boxInfo, $jsonOptions);
-        file_put_contents($this->boxFile, $content);
+        $this->composer->save();
+        $this->box->save();
     }
 
     protected function buildPhar()
@@ -137,13 +106,10 @@ class Build
 
     public function execute($version = null)
     {
-        $this->checkComposer();
-        $this->checkBox();
         $this->ensureOldSemver();
         $this->updateVersion($version);
         $this->updateAppBin();
-        $this->saveComposerJson();
-        $this->saveBoxJson();
+        $this->saveMetafiles();
         $this->buildPhar();
     }
 }
