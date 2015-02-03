@@ -11,20 +11,35 @@ class ExampleCommand extends Command
         return 'Show something for example';
     }
 
+    /**
+     * register your command here
+     */
     public function init()
     {
         parent::init();
-        // register your subcommand here ..
+        $this->command('sub-example');
     }
 
+    /**
+     * init your application options here
+     */
     public function options($opts)
     {
-        // command options
+        $opts->add('v|verbose', 'verbose message');
+        $opts->add('required:', 'required option with a value.');
+        $opts->add('optional?', 'optional option with a value');
+        $opts->add('multiple+', 'multiple value option.');
     }
 
+    /**
+     * Run!!
+     */
     public function execute()
     {
-        $logger = $this->logger;
-        $logger->info('This is a example command.');
+        $logger = $this->getLogger();
+        $formater = $this->getFormatter();
+        $logger->info($formater->format('This is a example command.', 'yellow'));
+        $input = $this->ask('Please type something:');
+        $logger->info('Your typed: ' . $this->getFormatter()->format($input, 'green'));
     }
 }
