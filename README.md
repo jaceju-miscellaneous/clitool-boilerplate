@@ -41,7 +41,7 @@ myapp zsh --bind myapp > ~/.zsh/myapp
 Then add these lines to your `.zshrc` file:
 
 ```
-source ~/.zsh/myapp 
+source ~/.zsh/myapp
 ```
 
 ## Powered by
