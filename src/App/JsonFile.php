@@ -22,11 +22,12 @@ class JsonFile
     public function __construct($path, $create = false)
     {
         $this->file = $path;
+        $isExists = file_exists($this->file);
 
-        if (!$create && !file_exists($this->file)) {
+        if (!$create && !$isExists) {
             $message = 'Here is not a ' . basename($path);
             throw new \Exception($message);
-        } elseif (!file_exists($this->file)) {
+        } elseif (!$isExists) {
             @mkdir(dirname($this->file));
             @touch($this->file);
         }
