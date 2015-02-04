@@ -105,15 +105,19 @@ class Build
     protected function initGhPages()
     {
         $buildDir = $this->baseDir . '/build';
-        @mkdir($buildDir);
+
+        if (!file_exists($buildDir)) {
+            @mkdir($buildDir . '/downloads', 0755, true);
+        }
         chdir($buildDir);
 
         if (!file_exists('.git')) {
             $gitUrl = sprintf('git@github.com:%s.git', Application::REPOSITORY);
-            exec('git clone ' . $gitUrl . ' .');
+            exec('git init');
+            exec('git remote add origin ' . $gitUrl);
         }
 
-        $result = exec('git checkout gh-pages');
+        $result = @exec('git checkout gh-pages');
         if ('' === $result) {
             exec('git checkout -b gh-pages');
         }
