@@ -56,9 +56,29 @@ class Build
         return trim($version);
     }
 
+    protected function getHashByTag($tag)
+    {
+        if (empty($tag)) { return ''; }
+        $hashes = [];
+        self::exec('git rev-list ' . $tag  . ' | head -n 1', false, $hashes);
+        $hash = array_pop($hashes);
+        return trim($hash);
+    }
+
+    protected function getLatestCommitHash()
+    {
+        return exec('git log --format="%H" -n 1');
+    }
+
     protected function ensureOldSemver()
     {
         $version = $this->getLatestVersion();
+        $oldHash = $this->getHashByTag($version);
+        $latestHash = $this->getLatestCommitHash();
+
+        if ($oldHash === $latestHash) {
+            return false;
+        }
 
         if ($version !== '' && !$this->checkSemver($version)) {
             throw new \Exception('Latest version does not match semantic version.');
@@ -75,6 +95,8 @@ class Build
             'minor' => $minor,
             'patch' => $patch,
         ];
+
+        return true;
     }
 
     protected function checkSemver($version)
@@ -153,43 +175,22 @@ class Build
         $buildFile = $this->getFullPharPath();
 
         if (file_exists($buildFile)) {
-            @unlink($buildFile);
+            unlink($buildFile);
+            sleep(3);
         }
 
-        @mkdir(dirname($buildFile));
+        if (!file_exists(dirname($buildFile))) {
+            mkdir(dirname($buildFile));
+        }
         self::exec('./box.phar build');
-
         copy($buildFile, $this->getFullPharPath($this->newVersion));
-    }
-
-    protected function updateManifest()
-    {
-        if (null === $this->manifest->info) {
-            $this->manifest->info = [];
-        }
-
-        $buildFile = $this->getFullPharPath($this->newVersion);
-
-        list($vendor, $repository) = explode('/', Application::REPOSITORY);
-        $url = sprintf('http://%s.github.io/%s/downloads/%s', $vendor, $repository, basename($buildFile));
-
-        $manifest = [
-            'name' => basename($buildFile),
-            'sha1' => sha1_file($buildFile),
-            'url'  => $url,
-            'version' => $this->newVersion,
-        ];
-
-        $this->manifest->info[] = $manifest;
-        $this->manifest->save();
     }
 
     protected function publishGhPages()
     {
         $buildDir = $this->baseDir . '/build';
         chdir($buildDir);
-        self::exec('git add .');
-        self::exec('git commit -m "Build ' . $this->newVersion . '"');
+        self::exec('git commit -a -m "Build ' . $this->newVersion . '"');
         self::exec('git push -u origin gh-pages');
         echo PHP_EOL, 'Version ' . $this->newVersion . ' be published.', PHP_EOL;
     }
@@ -197,14 +198,14 @@ class Build
     public function execute($version = null)
     {
         register_tick_function([$this, 'progress']);
-        $this->ensureOldSemver();
-        $this->updateVersion($version);
-        $this->updateRepository();
-        $this->updateAppBin();
-        $this->initGhPages();
-        $this->buildPhar();
-        $this->updateManifest();
-        $this->publishGhPages();
+        if ($this->ensureOldSemver()) {
+            $this->updateVersion($version);
+            $this->updateRepository();
+            $this->updateAppBin();
+            $this->initGhPages();
+            $this->buildPhar();
+            $this->publishGhPages();
+        }
     }
 
     public function progress()
