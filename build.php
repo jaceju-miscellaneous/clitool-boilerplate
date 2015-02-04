@@ -169,6 +169,7 @@ class Build
         exec('git add .');
         exec('git commit -m "Build ' . $this->newVersion . '"');
         exec('git push -u origin gh-pages');
+        echo 'Version ' . $this->newVersion . ' be published.', PHP_EOL;
     }
 
     public function execute($version = null)
