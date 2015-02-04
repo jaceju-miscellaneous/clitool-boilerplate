@@ -137,7 +137,7 @@ class Build
         @mkdir(dirname($buildFile));
         exec('./box.phar build');
 
-        rename($buildFile, $this->getFullPharPath($this->newVersion));
+        copy($buildFile, $this->getFullPharPath($this->newVersion));
     }
 
     protected function updateManifest()
