@@ -1,6 +1,7 @@
 <?php
 
 require __DIR__ . '/vendor/autoload.php';
+declare(ticks = 1);
 
 use App\Application;
 use App\JsonFile;
@@ -25,8 +26,13 @@ class Build
 
     protected $newVersion = '0.0.0';
 
-    public function __construct()
+    protected $output = [];
+
+    protected static $debug = false;
+
+    public function __construct($debug = false)
     {
+        self::$debug = $debug;
         $this->appName = strtolower(Application::NAME);
         $this->baseDir = getcwd();
         $this->composer = new JsonFile($this->baseDir . '/composer.json');
@@ -34,9 +40,25 @@ class Build
         $this->manifest = new JsonFile($this->baseDir . '/build/manifest.json', true);
     }
 
+    protected static function exec($cmd, $hide = true, &$output = null)
+    {
+        $hide = $hide && !self::$debug;
+        $cmd .= $hide ? ' &> /dev/null' : '';
+        return exec($cmd, $output);
+    }
+
+    protected function getLatestVersion()
+    {
+        $versions = [];
+        self::exec('git tag -l', false, $versions);
+        usort($versions, 'version_compare');
+        $version = array_pop($versions);
+        return trim($version);
+    }
+
     protected function ensureOldSemver()
     {
-        $version = trim(exec('git tag -l'));
+        $version = $this->getLatestVersion();
 
         if ($version !== '' && !$this->checkSemver($version)) {
             throw new \Exception('Latest version does not match semantic version.');
@@ -79,7 +101,7 @@ class Build
         }
 
         $this->newVersion = $this->getNewVersionFrom($version);
-        exec('git tag ' . $this->newVersion);
+        self::exec('git tag ' . $this->newVersion);
     }
 
     protected function updateRepository()
@@ -115,13 +137,13 @@ class Build
 
         if (!file_exists('.git')) {
             $gitUrl = sprintf('git@github.com:%s.git', Application::REPOSITORY);
-            exec('git init');
-            exec('git remote add origin ' . $gitUrl);
+            self::exec('git init');
+            self::exec('git remote add origin ' . $gitUrl);
         }
 
-        $result = @exec('git checkout gh-pages');
+        $result = self::exec('git checkout gh-pages');
         if ('' === $result) {
-            exec('git checkout -b gh-pages');
+            self::exec('git checkout -b gh-pages');
         }
     }
 
@@ -135,7 +157,7 @@ class Build
         }
 
         @mkdir(dirname($buildFile));
-        exec('./box.phar build');
+        self::exec('./box.phar build');
 
         copy($buildFile, $this->getFullPharPath($this->newVersion));
     }
@@ -166,14 +188,15 @@ class Build
     {
         $buildDir = $this->baseDir . '/build';
         chdir($buildDir);
-        exec('git add .');
-        exec('git commit -m "Build ' . $this->newVersion . '"');
-        exec('git push -u origin gh-pages');
-        echo 'Version ' . $this->newVersion . ' be published.', PHP_EOL;
+        self::exec('git add .');
+        self::exec('git commit -m "Build ' . $this->newVersion . '"');
+        self::exec('git push -u origin gh-pages');
+        echo PHP_EOL, 'Version ' . $this->newVersion . ' be published.', PHP_EOL;
     }
 
     public function execute($version = null)
     {
+        register_tick_function([$this, 'progress']);
         $this->ensureOldSemver();
         $this->updateVersion($version);
         $this->updateRepository();
@@ -182,6 +205,19 @@ class Build
         $this->buildPhar();
         $this->updateManifest();
         $this->publishGhPages();
+    }
+
+    public function progress()
+    {
+        static $start;
+
+        if (empty($start)) { $start = microtime(true); }
+        $now = microtime(true);
+
+        if (!self::$debug && ($now - $start > 0.0001)) {
+            echo '.';
+        }
+        $start = $now;
     }
 }
 
