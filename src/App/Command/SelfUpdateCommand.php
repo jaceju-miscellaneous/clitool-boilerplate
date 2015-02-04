@@ -9,8 +9,6 @@ use RuntimeException;
 
 class SelfUpdateCommand extends Command
 {
-    const MANIFEST_FILE = 'http://%s.github.io/%s/manifest.json';
-
     public function brief()
     {
         return 'Updates craftsman.phar to the latest version';
@@ -26,6 +24,7 @@ class SelfUpdateCommand extends Command
     {
         global $argv;
         $script = realpath($argv[0]);
+
         if (!is_writable($script)) {
             throw new \Exception("$script is not writable.");
         }
