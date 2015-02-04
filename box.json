@@ -1,8 +1,16 @@
 {
     "chmod": "0755",
     "directories": [
-        "src",
-        "vendor"
+        "src"
+    ],
+    "finder": [
+        {
+            "name": "*.php",
+            "exclude": [
+                "tests"
+            ],
+            "in": "vendor"
+        }
     ],
     "git-version": "package_version",
     "main": "src/bootstrap.php",
