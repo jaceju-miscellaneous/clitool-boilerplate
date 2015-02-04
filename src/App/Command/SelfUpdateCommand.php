@@ -4,8 +4,8 @@ namespace App\Command;
 
 use App\Application;
 use CLIFramework\Command;
-use Herrera\Phar\Update\Manager;
-use Herrera\Phar\Update\Manifest;
+use Exception;
+use RuntimeException;
 
 class SelfUpdateCommand extends Command
 {
@@ -22,13 +22,29 @@ class SelfUpdateCommand extends Command
         $opts->add('pre', 'Allow pre-releases');
     }
 
-    public function execute()
+    public function execute($version = '')
     {
+        global $argv;
+        $script = realpath($argv[0]);
+        if (!is_writable($script)) {
+            throw new \Exception("$script is not writable.");
+        }
+
+        // fetch new version
+        $this->logger->info("Updating $script...");
+
+        $pharFile = strtolower(Application::NAME);
+        $pharFile .= ('' !== $version) ? '-' . $version : '';
+        $pharFile .= '.phar';
         list($vendor, $repository) = explode('/', Application::REPOSITORY);
-        $url = sprintf(self::MANIFEST_FILE, $vendor, $repository);
-        $manager = new Manager(Manifest::loadFile($url));
-        $major = (bool) $this->getOptions()->major;
-        $pre = (bool) $this->getOptions()->pre;
-        $manager->update($this->getApplication()->getVersion(), $major, $pre);
+        $url = sprintf('http://%s.github.io/%s/downloads/%s', $vendor, $repository, $pharFile);
+
+        $code = system("curl -# -L $url > $script");
+        if(! $code == 0) {
+            throw new RuntimeException('Update Failed', 1);
+        }
+
+        $this->logger->info('Version updated.');
+        system($script . ' --version');
     }
 }
