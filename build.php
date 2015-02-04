@@ -102,8 +102,26 @@ class Build
         return $buildFile;
     }
 
+    protected function initGhPages()
+    {
+        $buildDir = $this->baseDir . '/build';
+        @mkdir($buildDir);
+        chdir($buildDir);
+
+        if (!file_exists('.git')) {
+            $gitUrl = sprintf('git@github.com:%s.git', Application::REPOSITORY);
+            exec('git clone ' . $gitUrl . ' .');
+        }
+
+        $result = exec('git checkout gh-pages');
+        if ('' === $result) {
+            exec('git checkout -b gh-pages');
+        }
+    }
+
     protected function buildPhar()
     {
+        chdir($this->baseDir);
         $buildFile = $this->getFullPharPath();
 
         if (file_exists($buildFile)) {
@@ -136,14 +154,25 @@ class Build
         $this->manifest->save();
     }
 
+    protected function publishGhPages()
+    {
+        $buildDir = $this->baseDir . '/build';
+        chdir($buildDir);
+        exec('git add .');
+        exec('git commit -m "Build ' . $this->newVersion . '"');
+        exec('git push -u origin gh-pages');
+    }
+
     public function execute($version = null)
     {
         $this->ensureOldSemver();
         $this->updateVersion($version);
         $this->updateRepository();
         $this->updateAppBin();
+        $this->initGhPages();
         $this->buildPhar();
         $this->updateManifest();
+        $this->publishGhPages();
     }
 }
 
