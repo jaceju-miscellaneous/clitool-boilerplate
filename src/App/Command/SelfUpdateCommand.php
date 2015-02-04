@@ -16,11 +16,19 @@ class SelfUpdateCommand extends Command
         return 'Updates craftsman.phar to the latest version';
     }
 
+    public function options($opts)
+    {
+        $opts->add('major', 'Lock to current major version');
+        $opts->add('pre', 'Allow pre-releases');
+    }
+
     public function execute()
     {
         list($vendor, $repository) = explode('/', Application::REPOSITORY);
         $url = sprintf(self::MANIFEST_FILE, $vendor, $repository);
         $manager = new Manager(Manifest::loadFile($url));
-        $manager->update($this->getApplication()->getVersion(), true);
+        $major = (bool) $this->getOptions()->major;
+        $pre = (bool) $this->getOptions()->pre;
+        $manager->update($this->getApplication()->getVersion(), $major, $pre);
     }
 }
