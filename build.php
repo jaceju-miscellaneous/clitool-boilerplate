@@ -94,9 +94,11 @@ class Build
         $this->box->save();
     }
 
-    protected function getFullPharPath()
+    protected function getFullPharPath($version = null)
     {
-        $pharName = $this->appName . '.phar';
+        $pharName = $this->appName;
+        $pharName .= $version ? '-' . $version : '';
+        $pharName .= '.phar';
         $buildDir = $this->baseDir . '/' . self::BUILD_PATH;
         $buildFile = $buildDir . '/' . $pharName;
         return $buildFile;
@@ -134,6 +136,8 @@ class Build
 
         @mkdir(dirname($buildFile));
         exec('./box.phar build');
+
+        rename($buildFile, $this->getFullPharPath($this->newVersion));
     }
 
     protected function updateManifest()
@@ -142,7 +146,7 @@ class Build
             $this->manifest->info = [];
         }
 
-        $buildFile = $this->getFullPharPath();
+        $buildFile = $this->getFullPharPath($this->newVersion);
 
         list($vendor, $repository) = explode('/', Application::REPOSITORY);
         $url = sprintf('http://%s.github.io/%s/downloads/%s', $vendor, $repository, basename($buildFile));
