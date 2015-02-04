@@ -23,14 +23,28 @@ Rename the application in `src/App/Application.php`:
 +    const REPOSITORY = 'vendor/repository';
 ```
 
-Then change the info in `composer.json`. 
+Then change the info in `composer.json`.
 
 ## Build executable phar
 
+It will build phar and publish it to remote site automatically.
+
 ```bash
 php build.php [version]
-chmod +x bin/myapp
-mv bin/myapp /usr/local/bin/
+```
+
+User can download it by this command:
+
+```bash
+curl -L -O https://vendor.github.io/repository/downloads/myapp.phar
+chmod +x myapp.phar
+sudo mv myapp.phar /usr/local/bin/myapp
+```
+
+`self update` :
+
+```bash
+myapp self-update
 ```
 
 ## Zsh auto-completion
