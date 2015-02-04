@@ -26,8 +26,6 @@ class Build
 
     protected $newVersion = '0.0.0';
 
-    protected $output = [];
-
     protected static $debug = false;
 
     public function __construct($debug = false)
@@ -190,7 +188,8 @@ class Build
     {
         $buildDir = $this->baseDir . '/build';
         chdir($buildDir);
-        self::exec('git commit -a -m "Build ' . $this->newVersion . '"');
+        self::exec('git add .');
+        self::exec('git commit -m "Build ' . $this->newVersion . '"');
         self::exec('git push -u origin gh-pages');
         echo PHP_EOL, 'Version ' . $this->newVersion . ' be published.', PHP_EOL;
     }
