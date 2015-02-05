@@ -191,19 +191,21 @@ class Build
         self::exec('git add .');
         self::exec('git commit -m "Build ' . $this->newVersion . '"');
         self::exec('git push -u origin gh-pages');
-        echo PHP_EOL, 'Version ' . $this->newVersion . ' be published.', PHP_EOL;
+        echo PHP_EOL, 'Version ' . $this->newVersion . ' be published :)', PHP_EOL;
     }
 
     public function execute($version = null)
     {
-        register_tick_function([$this, 'progress']);
         if ($this->ensureOldSemver()) {
+            register_tick_function([$this, 'progress']);
             $this->updateVersion($version);
             $this->updateRepository();
             $this->updateAppBin();
             $this->initGhPages();
             $this->buildPhar();
             $this->publishGhPages();
+        } else {
+            echo 'Nothing to do :(' . PHP_EOL;
         }
     }
 
