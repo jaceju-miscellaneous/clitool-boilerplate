@@ -2,15 +2,10 @@
 
 namespace App\File;
 
-class Json
+class Json extends Base
 {
     /**
-     * @var null|string
-     */
-    protected $file = null;
-
-    /**
-     * @var mixed|null
+     * @var mixed
      */
     public $info = null;
 
@@ -21,25 +16,14 @@ class Json
      */
     public function __construct($path, $create = false)
     {
-        $this->file = $path;
-        $isExists = file_exists($this->file);
-
-        if (!$create && !$isExists) {
-            $message = 'Here is not a ' . basename($path);
-            throw new \Exception($message);
-        } elseif (!$isExists) {
-            @mkdir(dirname($this->file));
-            @touch($this->file);
-        }
-
+        parent::__construct($path, $create);
         $this->info = json_decode(file_get_contents($this->file));
     }
 
     public function save()
     {
         $jsonOptions = JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT;
-        $content = json_encode($this->info, $jsonOptions) . PHP_EOL;
-        file_put_contents($this->file, $content);
+        $this->content = json_encode($this->info, $jsonOptions) . PHP_EOL;
+        parent::save();
     }
-
 }
