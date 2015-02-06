@@ -174,7 +174,6 @@ class Build
 
         if (file_exists($buildFile)) {
             unlink($buildFile);
-            sleep(3);
         }
 
         if (!file_exists(dirname($buildFile))) {
