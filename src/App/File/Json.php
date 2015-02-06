@@ -1,8 +1,8 @@
 <?php
 
-namespace App;
+namespace App\File;
 
-class JsonFile
+class Json
 {
     /**
      * @var null|string
