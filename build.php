@@ -4,7 +4,7 @@ require __DIR__ . '/vendor/autoload.php';
 declare(ticks = 1);
 
 use App\Application;
-use App\File\Json as JsonFile;
+use App\Filesystem\Json as JsonFile;
 
 class Build
 {
