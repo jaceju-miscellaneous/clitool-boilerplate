@@ -189,7 +189,7 @@ class Build
         chdir($buildDir);
         self::exec('git add .');
         self::exec('git commit -m "Build ' . $this->newVersion . '"');
-        self::exec('git push -u origin gh-pages');
+        self::exec('git push -u origin +gh-pages');
         echo PHP_EOL, 'Version ' . $this->newVersion . ' be published :)', PHP_EOL;
     }
 
