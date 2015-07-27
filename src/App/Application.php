@@ -7,8 +7,9 @@ use CLIFramework\Application as CliApp;
 class Application extends CliApp
 {
     const NAME = 'App';
+    const BIN_NAME = 'app';
     const VERSION = '@package_version@';
-    const REPOSITORY = 'jaceju/clitool-boilerplate';
+    const REPOSITORY = 'vendor-name/app-name';
 
     public function options($opts)
     {

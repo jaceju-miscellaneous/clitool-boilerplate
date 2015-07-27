@@ -1,17 +1,19 @@
 {
-    "name": "jaceju/clitool-boilerplate",
-    "description": "Simple boilerplate for build your command line tool.",
+    "name": "vendor-name/app-name",
+    "description": "The command line tool.",
     "minimum-stability": "dev",
     "license": "MIT",
     "authors": [
         {
-            "name": "Jace Ju",
-            "email": "jaceju@gmail.com"
+            "name": "Your Name",
+            "email": "your@email.com"
         }
     ],
     "require": {
         "php": ">=5.4.0",
-        "corneltek/cliframework": ">=2.2.0",
+        "corneltek/cliframework": ">=2.2.0"
+    },
+    "require-dev": {
         "kherge/box": "2.5.2"
     },
     "autoload": {
