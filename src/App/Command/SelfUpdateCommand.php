@@ -11,16 +11,10 @@ class SelfUpdateCommand extends Command
 {
     public function brief()
     {
-        return 'Updates craftsman.phar to the latest version';
+        return 'Updates ' . Application::NAME . ' to the latest version';
     }
 
-    public function options($opts)
-    {
-        $opts->add('major', 'Lock to current major version');
-        $opts->add('pre', 'Allow pre-releases');
-    }
-
-    public function execute($version = '')
+    public function execute()
     {
         global $argv;
         $script = realpath($argv[0]);
@@ -32,14 +26,11 @@ class SelfUpdateCommand extends Command
         // fetch new version
         $this->logger->info("Updating $script...");
 
-        $pharFile = strtolower(Application::NAME);
-        $pharFile .= ('' !== $version) ? '-' . $version : '';
-        $pharFile .= '.phar';
-        list($vendor, $repository) = explode('/', Application::REPOSITORY);
-        $url = sprintf('http://%s.github.io/%s/downloads/%s', $vendor, $repository, $pharFile);
+        $pharFile = strtolower(Application::BIN_NAME);
+        $url = sprintf('https://github.com/%s/blob/master/bin/%s?raw=true', Application::REPOSITORY, $pharFile);
 
         $code = system("curl -# -L $url > $script");
-        if(! $code == 0) {
+        if (false === $code) {
             throw new RuntimeException('Update Failed', 1);
         }
 
