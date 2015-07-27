@@ -6,10 +6,13 @@
     "finder": [
         {
             "name": "*.php",
+            "in": "vendor",
             "exclude": [
+                "vendor/bin",
+                "vendor/kherge",
+                "vendor/herrera-io",
                 "tests"
-            ],
-            "in": "vendor"
+            ]
         }
     ],
     "git-version": "package_version",
