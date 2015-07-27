@@ -11,12 +11,19 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "corneltek/cliframework": ">=2.2.0"
+        "corneltek/cliframework": ">=2.2.0",
+        "kherge/box": "2.5.2"
     },
     "autoload": {
         "classmap": [
             "src/",
             "tests/"
         ]
-    }
+    },
+    "scripts": {
+        "build": "./vendor/bin/box build && mv bin/app.phar bin/app"
+    },
+    "bin": [
+        "bin/app"
+    ]
 }

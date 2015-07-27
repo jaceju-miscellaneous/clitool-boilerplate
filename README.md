@@ -30,15 +30,13 @@ Then change the info in `composer.json`.
 It will build phar and publish it to remote site automatically.
 
 ```bash
-php build.php [version]
+composer build
 ```
 
 User can download it by this command:
 
 ```bash
-curl -L -O https://vendor.github.io/repository/downloads/myapp.phar
-chmod +x myapp.phar
-sudo mv myapp.phar /usr/local/bin/myapp
+composer global require vendor/repository
 ```
 
 `self update` :
