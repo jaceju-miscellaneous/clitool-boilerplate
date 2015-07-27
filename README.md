@@ -14,54 +14,80 @@ composer create-project jaceju/clitool-boilerplate myapp -s dev
 
 ## Change application information
 
-Rename the application in `src/App/Application.php`:
+Change the constants below in `src/App/Application.php`:
 
-```diff
--    const NAME = 'App';
-+    const NAME = 'MyApp';
--    const REPOSITORY = 'jaceju/clitool-boilerplate';
-+    const REPOSITORY = 'vendor/repository';
+```php
+    const NAME = 'App';
+    const BIN_NAME = 'app';
+    const REPOSITORY = 'vendor-name/app-repository';
 ```
 
-Then change the info in `composer.json`.
+Rename output phar in `box.json`:
+
+```json
+    "output": "bin/app.phar",
+```
+
+**Finally, change the `name`, `description`, `authors` and `scripts` in `composer.json`.**
+
+---
+
+Here is a example of `README.md` below for authors of the package. I suppose package name is `app` in this example.
+
+**You can remove all description above and this line.**
+
+# App
+
+## Requirement
+
+* PHP 5.4+
+
+## Installation
+
+Add `~/.composer/vendor/bin/` to `PATH` environment variable first. Then can install the package by:
+
+```bash
+composer global require vendor-name/app-repository
+```
+
+And `app` command should be executable.
 
 ## Build executable phar
 
-It will build phar and publish it to remote site automatically.
+You can build the phar file by:
 
 ```bash
 composer build
 ```
 
-User can download it by this command:
+## Self Updating
+
+Update `app` to latest version:
 
 ```bash
-composer global require vendor/repository
-```
-
-`self update` :
-
-```bash
-myapp self-update
+app self-update
 ```
 
 ## Zsh auto-completion
 
+You can create an auto-completion of `app` for zsh by:
+
 ```bash
-myapp zsh --bind myapp > ~/.zsh/myapp
+app zsh --bind app > ~/.zsh/app
 ```
 
-Then add these lines to your `.zshrc` file:
+Then add the line below to your `.zshrc` file:
 
 ```
-source ~/.zsh/myapp
+source ~/.zsh/app
 ```
+
+> Same steps as above in bash auto-completion.
 
 ## Powered by
 
 * [c9s/CLIFramework](https://github.com/c9s/CLIFramework)
 * [box-project/box2](https://github.com/box-project/box2)
-* [cpliakas/manifest-publisher](https://github.com/cpliakas/manifest-publisher)
 
 ## License
 

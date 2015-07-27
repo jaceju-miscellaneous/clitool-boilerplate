@@ -9,7 +9,7 @@ class Application extends CliApp
     const NAME = 'App';
     const BIN_NAME = 'app';
     const VERSION = '@package_version@';
-    const REPOSITORY = 'vendor-name/app-name';
+    const REPOSITORY = 'vendor-name/app-repository';
 
     public function options($opts)
     {
